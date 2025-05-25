@@ -1,0 +1,77 @@
+name: Reusable CI
+
+on:
+  workflow_call:
+    inputs:
+      enable-actionlint:
+        description: 'actionlintを実行するか'
+        type: boolean
+        default: true
+      enable-build:
+        description: 'ビルドを実行するか'
+        type: boolean
+        default: true
+      enable-lint:
+        description: 'リントを実行するか'
+        type: boolean
+        default: true
+      enable-test:
+        description: 'テストを実行するか'
+        type: boolean
+        default: true
+      node-version:
+        description: 'Node.jsバージョン'
+        type: string
+        default: '20'
+      pnpm-version:
+        description: 'pnpmバージョン'
+        type: string
+        default: '9'
+
+defaults:
+  run:
+    shell: bash
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run actionlint
+        if: inputs.enable-actionlint
+        run: docker run --rm -v "$(pwd):$(pwd)" -w "$(pwd)" rhysd/actionlint:1.7.3
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ inputs.pnpm-version }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build
+        if: inputs.enable-build
+        run: pnpm run build
+
+      - name: Lint
+        if: inputs.enable-lint
+        run: pnpm run lint
+
+      - name: Test
+        if: inputs.enable-test
+        run: pnpm test
