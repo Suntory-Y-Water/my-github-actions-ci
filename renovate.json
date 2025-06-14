@@ -1,0 +1,84 @@
+{
+	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
+	"extends": [
+		"config:base"
+	],
+	"pinDigests": true,
+	"separateMajorMinor": true,
+	"separateMultipleMajor": true,
+	"semanticCommits": "enabled",
+	"dependencyDashboard": true,
+	"packageRules": [
+		{
+			"description": "GitHub Actions updates",
+			"matchManagers": [
+				"github-actions"
+			],
+			"semanticCommitType": "ci",
+			"semanticCommitScope": "actions",
+			"automerge": false,
+			"reviewersFromCodeOwners": true
+		},
+		{
+			"description": "Node.js Docker images",
+			"matchDatasources": [
+				"docker"
+			],
+			"matchPackageNames": [
+				"node"
+			],
+			"semanticCommitType": "ci",
+			"semanticCommitScope": "node"
+		},
+		{
+			"description": "pnpm version updates",
+			"matchManagers": [
+				"github-actions"
+			],
+			"matchDepNames": [
+				"pnpm/action-setup"
+			],
+			"semanticCommitType": "ci",
+			"semanticCommitScope": "pnpm"
+		},
+		{
+			"description": "Security tools updates - patch auto-merge",
+			"matchPackageNames": [
+				"koki-develop/github-actions-lint/actionlint",
+				"koki-develop/github-actions-lint/ghalint",
+				"koki-develop/github-actions-lint/zizmor"
+			],
+			"matchUpdateTypes": [
+				"patch"
+			],
+			"semanticCommitType": "fix",
+			"semanticCommitScope": "security",
+			"automerge": true
+		},
+		{
+			"description": "Security tools updates - minor/major manual review",
+			"matchPackageNames": [
+				"koki-develop/github-actions-lint/actionlint",
+				"koki-develop/github-actions-lint/ghalint",
+				"koki-develop/github-actions-lint/zizmor"
+			],
+			"matchUpdateTypes": [
+				"minor",
+				"major"
+			],
+			"semanticCommitType": "feat",
+			"semanticCommitScope": "security",
+			"automerge": false
+		}
+	],
+	"schedule": [
+		"before 9am on monday"
+	],
+	"timezone": "Asia/Tokyo",
+	"labels": [
+		"dependencies"
+	],
+	"assignees": [
+		"Suntory-Y-Water"
+	]
+}
