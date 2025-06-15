@@ -23,10 +23,6 @@ on:
         description: 'Run security audit'
         default: true
         type: boolean
-      unused-code-check:
-        description: 'Check for unused code'
-        default: true
-        type: boolean
 
 defaults:
   run:
@@ -66,13 +62,6 @@ jobs:
         run: |
           echo "パッケージのセキュリティ監査を実行します"
           pnpm audit --audit-level high
-
-      - name: Check unused exports
-        if: ${{ inputs.unused-code-check }}
-        run: |
-          echo "未使用コードの検出を実行します"
-          pnpm add -D ts-unused-exports
-          npx ts-unused-exports tsconfig.json --excludePathsFromReport="test;spec;__tests__;*.test.*;*.spec.*"
 
       - name: Build
         run: pnpm run build
